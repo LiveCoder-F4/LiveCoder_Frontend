@@ -1,10 +1,18 @@
 export default function Header({ right = null }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-neutral-200 bg-white/85 backdrop-blur">
-      <div className="container flex items-center justify-between py-4">
-        <div className="w-24" />
-        <a href="/" className="rounded-xl bg-neutral-100 px-6 py-3 text-xl font-extrabold">LiveCoder</a>
-        <div className="flex min-w-[6rem] items-center justify-end gap-2">{right}</div>
+    <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60">
+      <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        <a href="/" className="flex items-center gap-2 group">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-bold text-lg shadow-md group-hover:shadow-indigo-500/30 transition-shadow">
+            L
+          </div>
+          <span className="text-xl font-bold tracking-tight text-neutral-900 group-hover:text-indigo-700 transition-colors">
+            LiveCoder
+          </span>
+        </a>
+        <div className="flex items-center gap-4">
+          {right}
+        </div>
       </div>
     </header>
   );

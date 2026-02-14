@@ -4,6 +4,7 @@ import HomeAuthed from "../modules/home/HomeAuthed.jsx";
 import LoginPage from "../modules/auth/LoginPage.jsx";
 import ProblemsGuest from "../modules/problems/ProblemsGuest.jsx";
 import ProblemsAuthed from "../modules/problems/ProblemsAuthed.jsx";
+import ProblemCreate from "../modules/problems/ProblemCreate.jsx"; // ✅ 추가
 import ProblemSolve from "../modules/problems/ProblemSolve.jsx";
 import ResultPage from "../modules/problems/ResultPage.jsx";
 import CommunityGuest from "../modules/community/CommunityGuest.jsx";
@@ -27,6 +28,8 @@ export default function App() {
       <Route path='/login' element={<LoginPage />} />
       <Route path='/problems' element={<ProblemsGuest />} />
       <Route path='/problems/auth' element={<ProblemsAuthed />} />
+      <Route path='/problems/create' element={<ProblemCreate />} /> {/* ✅ 추가 */}
+      <Route path='/problems/:id/edit' element={<ProblemCreate />} /> {/* ✅ 추가 */}
       <Route path='/problems/:id' element={<ProblemSolve />} />
       <Route path='/result' element={<ResultPage />} />
       <Route path='/community' element={<CommunityGuest />} />
