@@ -1,45 +1,68 @@
-// 더미 데이터를 반환하는 Community API
+import axiosInstance from './axiosInstance';
+
 export const communityApi = {
-  // 게시글 목록 가져오기
-  getPosts: () => Promise.resolve({
-    data: [
-      { id: 1, title: "React 19에서 변경된 점 정리", author: "코딩왕", createdAt: "2024-03-20", likes: 12, comments: 5 },
-      { id: 2, title: "백엔드 개발자 로드맵 공유합니다", author: "서버마스터", createdAt: "2024-03-19", likes: 45, comments: 12 },
-      { id: 3, title: "알고리즘 문제 풀이 꿀팁 (Java)", author: "알고맨", createdAt: "2024-03-18", likes: 23, comments: 8 },
-    ]
-  }),
+  // 게시판별 최신 요약 가져오기 (공지, 질문, 정보공유 5개씩)
+  getSummary: () => {
+    return axiosInstance.get('/posts/summary');
+  },
+
+  // 특정 카테고리의 게시글 목록 가져오기
+  getPostsByCategory: (category, page = 0, size = 10) => {
+    return axiosInstance.get('/posts', { params: { category, page, size } });
+  },
+
+  // 게시글 목록 가져오기 (전체/기존 방식 하위호환)
+  getPosts: (page = 0, size = 10) => {
+    return axiosInstance.get('/posts/community', { params: { page, size } });
+  },
 
   // 게시글 상세 조회
-  getPostDetail: (id) => Promise.resolve({
-    data: {
-      id,
-      title: "백엔드 개발자 로드맵 공유합니다",
-      content: "백엔드 개발자가 되기 위해서는 Java, Spring Boot, MySQL 등을 공부해야 합니다...",
-      author: "서버마스터",
-      createdAt: "2024-03-19",
-      likes: 45,
-      comments: [
-        { id: 101, author: "질문자", content: "도움이 많이 되었습니다!", createdAt: "2024-03-19 14:00" },
-        { id: 102, author: "답변자", content: "추가로 Redis도 공부하시면 좋습니다.", createdAt: "2024-03-19 15:30" }
-      ]
-    }
-  }),
+  getPostDetail: (id) => {
+    return axiosInstance.get(`/posts/${id}`);
+  },
+
+  // 조회수 증가
+  increaseViewCount: (id) => {
+    return axiosInstance.post(`/posts/${id}/view`);
+  },
 
   // 게시글 작성
   createPost: (postData) => {
-    console.log("게시글 작성 요청:", postData);
-    return Promise.resolve({ data: { success: true } });
+    return axiosInstance.post('/posts', postData);
+  },
+
+  // 게시글 수정
+  updatePost: (id, postData) => {
+    return axiosInstance.put(`/posts/${id}`, postData);
+  },
+
+  // 게시글 삭제
+  deletePost: (id) => {
+    return axiosInstance.delete(`/posts/${id}`);
   },
 
   // 댓글 작성
   createComment: (postId, commentData) => {
-    console.log(`게시글 ${postId}에 댓글 작성:`, commentData);
-    return Promise.resolve({ data: { success: true } });
+    return axiosInstance.post(`/posts/${postId}/comments`, commentData);
+  },
+
+  // 댓글 수정
+  updateComment: (postId, commentId, content) => {
+    return axiosInstance.put(`/posts/${postId}/comments/${commentId}`, { content });
+  },
+
+  // 댓글 삭제
+  deleteComment: (postId, commentId) => {
+    return axiosInstance.delete(`/posts/${postId}/comments/${commentId}`);
   },
 
   // 좋아요 클릭
   likePost: (postId) => {
-    console.log(`게시글 ${postId} 좋아요 클릭`);
-    return Promise.resolve({ data: { success: true } });
+    return axiosInstance.post(`/posts/${postId}/likes`);
+  },
+
+  // 좋아요 취소
+  unlikePost: (postId) => {
+    return axiosInstance.delete(`/posts/${postId}/likes`);
   }
 };

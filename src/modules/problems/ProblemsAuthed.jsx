@@ -52,23 +52,23 @@ export default function ProblemsAuthed() {
         ) : problems.length > 0 ? (
           <ul className="space-y-3">
             {problems.map((problem) => (
-              <li key={problem.id}>
+              <li key={problem.problem_id}>
                 <a 
-                  href={`/problems/${problem.id}`} 
+                  href={`/problems/${problem.problem_id}`} 
                   className="flex items-center justify-between rounded-xl border border-neutral-100 p-4 transition hover:bg-neutral-50 hover:border-neutral-200"
                 >
                   <div className="flex items-center gap-4">
-                    <span className="font-mono text-neutral-400">#{problem.id}</span>
+                    <span className="font-mono text-neutral-400">#{problem.problem_id}</span>
                     <span className="font-semibold text-neutral-800">{problem.title}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                      problem.difficulty === 'EASY' ? 'bg-green-50 text-green-600' : 
-                      problem.difficulty === 'MEDIUM' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-600'
+                    <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wider ${
+                      problem.difficultyName === 'EASY' ? 'bg-green-50 text-green-600 border border-green-100' : 
+                      problem.difficultyName === 'MEDIUM' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 'bg-rose-50 text-rose-600 border border-rose-100'
                     }`}>
-                      {problem.difficulty}
+                      {problem.difficultyName}
                     </span>
-                    <span className="text-neutral-400">→</span>
+                    <span className="text-neutral-300">→</span>
                   </div>
                 </a>
               </li>

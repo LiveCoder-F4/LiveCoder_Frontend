@@ -27,9 +27,9 @@ export default function ProblemsGuest() {
         <h2 className="mb-4 text-xl font-bold">문제 목록</h2>
         <ul className="space-y-3">
           {problems.map((problem) => (
-            <li key={problem.id}>
-              <a href={`/problems/${problem.id}`} className="block rounded-xl border border-neutral-100 px-4 py-3 hover:bg-neutral-50 hover:border-neutral-200 transition">
-                <span className="font-mono text-neutral-400 mr-3">#{problem.id}</span>
+            <li key={problem.problem_id}>
+              <a href={`/problems/${problem.problem_id}`} className="block rounded-xl border border-neutral-100 px-4 py-3 hover:bg-neutral-50 hover:border-neutral-200 transition">
+                <span className="font-mono text-neutral-400 mr-3">#{problem.problem_id}</span>
                 <span className="font-semibold">{problem.title}</span>
               </a>
             </li>

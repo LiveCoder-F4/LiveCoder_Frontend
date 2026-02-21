@@ -68,15 +68,19 @@ function LoginForm() {
     setError("");
     setLoading(true);
     try {
-      // 실제 API 호출 흉내 (딜레이)
-      await new Promise(r => setTimeout(r, 800));
       const response = await authApi.login(formData);
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("userId", response.data.userId);
-      localStorage.setItem("nickname", response.data.nickname);
+      const { token, userId, nickname } = response.data;
+      
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("nickname", nickname);
+      
       navigate("/home/auth");
     } catch (err) {
-      setError(err.response?.data?.message || "로그인에 실패했습니다.");
+      // 백엔드에서 LoginResponse에 실어 보낸 message를 에러 메시지로 사용
+      const errorMessage = err.response?.data?.message || "로그인에 실패했습니다. 아이디와 비밀번호를 확인해 주세요.";
+      setError(errorMessage);
+      console.error("로그인 에러 상세:", err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -137,7 +141,6 @@ function SignupForm({ setMode }) {
     setError("");
     setLoading(true);
     try {
-      await new Promise(r => setTimeout(r, 1000));
       await authApi.register(formData);
       alert("회원가입이 완료되었습니다. 로그인해 주세요.");
       setMode("login");

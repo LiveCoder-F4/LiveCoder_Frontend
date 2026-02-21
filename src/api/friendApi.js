@@ -1,25 +1,48 @@
-// 더미 데이터를 반환하는 Friend/Chat API
+import axiosInstance from './axiosInstance';
+
 export const friendApi = {
   // 친구 목록 조회
-  getFriends: () => Promise.resolve({
-    data: [
-      { id: 2, nickname: "서버마스터", status: "ONLINE" },
-      { id: 3, nickname: "알고맨", status: "OFFLINE" },
-      { id: 4, nickname: "코딩꿈나무", status: "ONLINE" }
-    ]
-  }),
-
-  // 쪽지 목록 조회
-  getMessages: () => Promise.resolve({
-    data: [
-      { id: 1, sender: "서버마스터", content: "오늘 배틀 한 판 어때요?", time: "오후 2:30", isRead: false },
-      { id: 2, sender: "알고맨", content: "문제 풀이 공유 감사합니다!", time: "어제", isRead: true }
-    ]
-  }),
+  getFriends: () => {
+    return axiosInstance.get('/friends');
+  },
+  
+  // 친구 요청 보내기
+  sendFriendRequest: (receiverId) => {
+    return axiosInstance.post('/friends/requests', { receiverId });
+  },
+  
+  // 받은 친구 요청 목록 조회
+  getReceivedRequests: () => {
+    return axiosInstance.get('/friends/requests/received');
+  },
+  
+  // 보낸 친구 요청 목록 조회
+  getSentRequests: () => {
+    return axiosInstance.get('/friends/requests/sent');
+  },
+  
+  // 친구 요청 수락
+  acceptRequest: (requestId) => {
+    return axiosInstance.put(`/friends/requests/${requestId}/accept`);
+  },
+  
+  // 친구 요청 거절
+  rejectRequest: (requestId) => {
+    return axiosInstance.put(`/friends/requests/${requestId}/reject`);
+  },
+  
+  // 친구 요청 취소
+  cancelRequest: (requestId) => {
+    return axiosInstance.delete(`/friends/requests/${requestId}`);
+  },
+  
+  // 친구 삭제
+  deleteFriend: (userId) => {
+    return axiosInstance.delete(`/friends/${userId}`);
+  },
 
   // 쪽지 보내기
-  sendMessage: (receiverId, content) => {
-    console.log(`${receiverId}에게 메시지 전송:`, content);
-    return Promise.resolve({ data: { success: true } });
+  sendMessage: (userId, content) => {
+    return axiosInstance.post(`/friends/msg/${userId}`, { content });
   }
 };
