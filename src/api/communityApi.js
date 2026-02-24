@@ -31,6 +31,15 @@ export const communityApi = {
     return await axiosInstance.post('/posts', postData);
   },
 
+  // 게시글 작성 (파일 포함)
+  createPostWithFiles: async (formData) => {
+    return await axiosInstance.post('/posts/with-files', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
   // 게시글 수정
   updatePost: async (id, postData) => {
     return await axiosInstance.put(`/posts/${id}`, postData);
@@ -39,6 +48,11 @@ export const communityApi = {
   // 게시글 삭제
   deletePost: async (id) => {
     return await axiosInstance.delete(`/posts/${id}`);
+  },
+
+  // 첨부파일 삭제
+  deleteAttachment: async (attachmentId) => {
+    return await axiosInstance.delete(`/posts/attachments/${attachmentId}`);
   },
 
   // 댓글 작성
@@ -54,6 +68,11 @@ export const communityApi = {
   // 댓글 삭제
   deleteComment: async (postId, commentId) => {
     return await axiosInstance.delete(`/posts/${postId}/comments/${commentId}`);
+  },
+
+  // 공지 작성(관리자 전용)
+  createNotice: async (noticeData) => {
+    return await axiosInstance.post('/posts/admin/notices', noticeData);
   },
 
   // 좋아요 클릭

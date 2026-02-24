@@ -295,6 +295,32 @@ export default function PostDetail() {
             </div>
           </div>
           
+          {/* ✅ 추가: 첨부파일 목록 영역 */}
+          {post.attachments && post.attachments.length > 0 && (
+            <div className="mt-10 p-5 bg-neutral-50 rounded-2xl border border-neutral-100">
+              <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                📎 첨부파일 ({post.attachments.length})
+              </h4>
+              <div className="flex flex-wrap gap-3">
+                {post.attachments.map(file => (
+                  <a 
+                    key={file.attachmentId}
+                    href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/posts/attachments/${file.attachmentId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-neutral-200 rounded-xl text-sm font-medium text-neutral-600 hover:border-indigo-300 hover:text-indigo-600 transition-all shadow-sm"
+                  >
+                    <span className="text-indigo-400">📄</span>
+                    {file.originalFilename}
+                    <span className="text-[10px] text-neutral-400 ml-1">
+                      ({(file.fileSize / 1024).toFixed(1)} KB)
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+          
           <div className="mt-12 pt-6 border-t border-neutral-100 flex justify-center gap-4">
             <button className="flex flex-col items-center gap-1 group" onClick={handleLikeToggle}>
               <div className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${post.isLiked ? 'bg-red-50 border-red-200' : 'border-neutral-200 group-hover:bg-red-50 group-hover:border-red-200'}`}>

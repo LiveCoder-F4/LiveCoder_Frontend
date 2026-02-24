@@ -11,6 +11,9 @@ export default function BoardListAuthed() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // ✅ 임시 관리자 체크 (userId 1번)
+  const isAdmin = localStorage.getItem("userId") === "1";
+
   const boardNames = {
     NOTICE: "공지사항",
     QUESTION: "질문 게시판",
@@ -23,7 +26,7 @@ export default function BoardListAuthed() {
         setLoading(true);
         const response = await communityApi.getPostsByCategory(category);
         if (response.data && response.data.success) {
-          setPosts(response.data.data.items);
+          setPosts(response.data.data.items || []);
         }
       } catch (err) {
         console.error("게시글 목록을 불러오는데 실패했습니다.", err);
@@ -39,20 +42,23 @@ export default function BoardListAuthed() {
     return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
   };
 
+  // ✅ 공지사항 여부와 관리자 권한에 따른 글쓰기 버튼 표시 여부
+  const canCreatePost = category !== 'NOTICE' || isAdmin;
+
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-neutral-100 bg-neutral-50/50 flex justify-between items-center">
+        <div className="bg-white rounded-[2rem] border border-neutral-100 shadow-xl shadow-neutral-100/50 overflow-hidden">
+          <div className="px-8 py-8 border-b border-neutral-50 bg-neutral-50/30 flex justify-between items-center">
             <div>
-              <h2 className="text-xl font-bold text-neutral-800">{boardNames[category] || "커뮤니티"}</h2>
-              <p className="text-xs text-neutral-500 mt-1">
-                {category === 'NOTICE' ? '중요 소식을 전해드립니다.' : '함께 지식을 나누고 성장하세요.'}
+              <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">{boardNames[category] || "커뮤니티"}</h2>
+              <p className="text-xs text-neutral-400 mt-2 font-medium">
+                {category === 'NOTICE' ? '🚀 서비스의 중요 소식을 가장 먼저 확인하세요.' : '💡 지식을 나누고 동료들과 함께 성장하는 공간입니다.'}
               </p>
             </div>
-            {category !== 'NOTICE' && (
-              <Button onClick={() => navigate('/posts/create')} className="px-5 py-2">
-                글쓰기
+            {canCreatePost && (
+              <Button onClick={() => navigate(`/posts/create?category=${category}`)} className="px-6 py-2.5 font-bold shadow-lg shadow-indigo-100 transition-transform hover:scale-105 active:scale-95">
+                {category === 'NOTICE' ? '공지 작성' : '새 글 쓰기'}
               </Button>
             )}
           </div>

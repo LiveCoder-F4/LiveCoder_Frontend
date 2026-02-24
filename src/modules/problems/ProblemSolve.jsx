@@ -47,9 +47,16 @@ export default function ProblemSolve() {
     setSubmitting(true);
     try {
       const response = await problemApi.submitCode(id);
-      alert(`최종 제출 결과: ${response.data.status}`);
-      if (response.data.correct) {
-        navigate("/result", { state: { success: true, problemId: id, result: response.data } });
+      // 백엔드가 SubmissionResponse 또는 관련 데이터를 반환한다고 가정
+      // 만약 response.data에 submissionId가 있다면 해당 상세 페이지로 이동
+      const submissionId = response.data.submissionId;
+      
+      alert(`최종 제출 완료! 결과: ${response.data.status}`);
+      
+      if (submissionId) {
+        navigate(`/problems/${id}/submissions/${submissionId}`);
+      } else {
+        navigate("/problems/auth");
       }
     } catch (err) {
       alert(err.response?.data || "제출 중 오류가 발생했습니다.");

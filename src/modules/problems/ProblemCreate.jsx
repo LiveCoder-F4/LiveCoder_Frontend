@@ -32,7 +32,7 @@ export default function ProblemCreate() {
           const data = response.data;
           setFormData({
             ...data,
-            difficulty_id: data.difficulty === "EASY" ? 1 : data.difficulty === "MEDIUM" ? 2 : 3
+            difficulty_id: data.difficultyName === "EASY" ? 1 : data.difficultyName === "MEDIUM" ? 2 : 3
           });
         } catch (err) {
           console.error("문제 정보 로딩 실패", err);

@@ -24,5 +24,11 @@ export const userApi = {
   // 풀이 공개 여부 변경
   updateSolvedVisibility: (id, solvedData) => {
     return axiosInstance.put(`/users/${id}/solved`, solvedData);
+  },
+
+  // 회원 탈퇴
+  deleteUser: (id, passwordData) => {
+    // passwordData: { password: "your_password" }
+    return axiosInstance.delete(`/users/${id}`, { data: passwordData });
   }
 };
