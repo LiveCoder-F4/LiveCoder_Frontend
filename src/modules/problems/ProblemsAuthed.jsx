@@ -8,8 +8,8 @@ export default function ProblemsAuthed() {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // ✅ 임시 관리자 체크 (userId 1번)
-  const isAdmin = localStorage.getItem("userId") === "1";
+  // ✅ 실제 권한 체크 (localStorage의 userRole 사용)
+  const isAdmin = localStorage.getItem("userRole") === "ADMIN";
 
   const fetchProblems = async () => {
     try {

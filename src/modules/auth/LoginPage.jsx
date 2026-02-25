@@ -69,11 +69,12 @@ function LoginForm() {
     setLoading(true);
     try {
       const response = await authApi.login(formData);
-      const { token, userId, nickname } = response.data;
+      const { token, userId, nickname, role } = response.data;
       
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userId);
       localStorage.setItem("nickname", nickname);
+      localStorage.setItem("userRole", role);
       
       navigate("/home/auth");
     } catch (err) {

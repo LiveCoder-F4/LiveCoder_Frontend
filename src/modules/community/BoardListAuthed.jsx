@@ -17,8 +17,8 @@ export default function BoardListAuthed() {
   const [keyword, setKeyword] = useState(initialKeyword);
   const [sortBy, setSortBy] = useState(initialSort);
 
-  // ✅ 임시 관리자 체크 (userId 1번)
-  const isAdmin = localStorage.getItem("userId") === "1";
+  // ✅ 실제 권한 체크 (localStorage의 userRole 사용)
+  const isAdmin = localStorage.getItem("userRole") === "ADMIN";
 
   const boardNames = {
     NOTICE: "공지사항",

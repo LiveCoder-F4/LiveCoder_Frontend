@@ -146,6 +146,7 @@ export default function PostDetail() {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [replyingCommentId, setReplyingCommentId] = useState(null);
   const currentUserId = localStorage.getItem("userId");
+  const isAdmin = localStorage.getItem("userRole") === "ADMIN";
   const hasIncreasedViewCount = useRef(false);
 
   const fetchPostDetail = async () => {
@@ -308,9 +309,12 @@ export default function PostDetail() {
             </div>
           </div>
           <div className="flex gap-2">
-            {currentUserId === String(post.userId) && (
+            {(currentUserId === String(post.userId) || isAdmin) && (
               <>
-                <Button variant="outline" size="sm" onClick={() => navigate(`/posts/${id}/edit`)}>수정</Button>
+                {/* 공지사항은 어드민만 수정 가능, 일반글은 본인 또는 어드민이 수정 가능 */}
+                {(post.category !== 'NOTICE' || isAdmin) && (
+                  <Button variant="outline" size="sm" onClick={() => navigate(`/posts/${id}/edit`)}>수정</Button>
+                )}
                 <Button variant="outline" size="sm" className="text-red-500 border-red-100 hover:bg-red-50" onClick={handlePostDelete}>삭제</Button>
               </>
             )}
