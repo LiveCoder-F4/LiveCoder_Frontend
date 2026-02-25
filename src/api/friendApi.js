@@ -45,5 +45,15 @@ export const friendApi = {
   sendMessage: async (userId, content) => {
     // 백엔드는 FriendMessageRequest 레코드를 받음 (content 필드 포함)
     return await axiosInstance.post(`/friends/msg/${userId}`, { content });
+  },
+
+  // 받은 쪽지 목록 조회
+  getReceivedMessages: async () => {
+    return await axiosInstance.get('/friends/msg/received');
+  },
+
+  // 보낸 쪽지 목록 조회
+  getSentMessages: async () => {
+    return await axiosInstance.get('/friends/msg/sent');
   }
 };

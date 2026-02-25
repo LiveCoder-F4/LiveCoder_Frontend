@@ -7,8 +7,8 @@ export const communityApi = {
   },
 
   // 특정 카테고리의 게시글 목록 가져오기
-  getPostsByCategory: async (category, page = 0, size = 10) => {
-    return await axiosInstance.get('/posts', { params: { category, page, size } });
+  getPostsByCategory: async (category, page = 0, size = 10, sort = 'latest') => {
+    return await axiosInstance.get('/posts', { params: { category, page, size, sort } });
   },
 
   // 게시글 목록 가져오기 (전체/기존 방식 하위호환)
@@ -48,6 +48,11 @@ export const communityApi = {
   // 게시글 삭제
   deletePost: async (id) => {
     return await axiosInstance.delete(`/posts/${id}`);
+  },
+
+  // 게시글 검색
+  searchPosts: async (keyword, page = 0, size = 10, sort = 'latest') => {
+    return await axiosInstance.get('/posts/search', { params: { keyword, page, size, sort } });
   },
 
   // 첨부파일 삭제

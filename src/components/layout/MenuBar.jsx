@@ -14,6 +14,7 @@ export default function MenuBar() {
     { label: "문제", to: isAuthenticated ? "/problems/auth" : "/problems" },
     { label: "커뮤니티", to: isAuthenticated ? "/community/auth" : "/community" },
     { label: "경쟁", to: "/battle/live" },
+    { label: "친구", to: "/friends" },
     { label: "마이페이지", to: "/me" },
   ];
 

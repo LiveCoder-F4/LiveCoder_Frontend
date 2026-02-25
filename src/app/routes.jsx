@@ -22,6 +22,7 @@ import Playground from "../modules/play/Playground.jsx";
 import MyPage from "../modules/account/MyPage.jsx";
 import ChatPage from "../modules/chat/ChatPage.jsx";
 import CollabPage from "../modules/collab/CollabPage.jsx";
+import FriendPage from "../modules/friend/FriendPage.jsx";
 
 export default function App() {
   return (
@@ -53,6 +54,7 @@ export default function App() {
       <Route path='/chat' element={<ChatPage />} />
       <Route path='/collab/:roomId' element={<CollabPage />} />
       <Route path='/collab' element={<CollabPage />} />
+      <Route path='/friends' element={<FriendPage />} />
       <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>
   );

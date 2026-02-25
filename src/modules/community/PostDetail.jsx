@@ -4,6 +4,7 @@ import AppLayout from "../../app/AppLayout.jsx";
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
 import { communityApi } from "../../api/communityApi";
+import { friendApi } from "../../api/friendApi";
 
 // --- 개별 입력창 컴포넌트 (독립적 상태 관리로 타이핑 오류 해결) ---
 const CommentInput = ({ 
@@ -60,6 +61,7 @@ const CommentItem = ({
   handleCommentDelete, 
   handleCommentUpdate, 
   handleCommentSubmit,
+  handleFriendRequest,
   setEditingCommentId,
   setReplyingCommentId
 }) => (
@@ -67,6 +69,15 @@ const CommentItem = ({
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-2">
         <span className="font-bold text-sm text-neutral-700">{comment.nickname}</span>
+        {currentUserId !== String(comment.userId) && (
+          <button 
+            onClick={() => handleFriendRequest(comment.userId)}
+            className="text-[10px] bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded-md font-bold hover:bg-indigo-100"
+            title="친구 요청"
+          >
+            + 친구
+          </button>
+        )}
         <span className="text-[10px] text-neutral-400">{new Date(comment.createdAt).toLocaleString()}</span>
       </div>
       <div className="flex gap-3">
@@ -116,6 +127,7 @@ const CommentItem = ({
             handleCommentDelete={handleCommentDelete}
             handleCommentUpdate={handleCommentUpdate}
             handleCommentSubmit={handleCommentSubmit}
+            handleFriendRequest={handleFriendRequest}
             setEditingCommentId={setEditingCommentId}
             setReplyingCommentId={setReplyingCommentId}
           />
@@ -162,6 +174,15 @@ export default function PostDetail() {
     }
     init();
   }, [id]);
+
+  const handleFriendRequest = async (userId) => {
+    try {
+      await friendApi.sendFriendRequest(userId);
+      alert("친구 요청을 보냈습니다.");
+    } catch (err) {
+      alert(err.response?.data || "친구 요청에 실패했습니다.");
+    }
+  };
 
   const handleLikeToggle = async () => {
     try {
@@ -271,7 +292,17 @@ export default function PostDetail() {
               <h1 className="text-2xl font-bold text-neutral-800">{post.title}</h1>
             </div>
             <div className="flex items-center gap-4 text-sm text-neutral-500">
-              <span className="font-medium text-neutral-700">👤 {post.nickname}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="font-medium text-neutral-700">👤 {post.nickname}</span>
+                {currentUserId !== String(post.userId) && (
+                  <button 
+                    onClick={() => handleFriendRequest(post.userId)}
+                    className="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded-md font-bold hover:bg-indigo-700 transition-colors"
+                  >
+                    + 친구 요청
+                  </button>
+                )}
+              </div>
               <span>📅 {new Date(post.createdAt).toLocaleDateString()}</span>
               <span>👁️ {post.viewCount}</span>
             </div>
@@ -366,6 +397,7 @@ export default function PostDetail() {
                   handleCommentDelete={handleCommentDelete}
                   handleCommentUpdate={handleCommentUpdate}
                   handleCommentSubmit={handleCommentSubmit}
+                  handleFriendRequest={handleFriendRequest}
                   setEditingCommentId={setEditingCommentId}
                   setReplyingCommentId={setReplyingCommentId}
                 />

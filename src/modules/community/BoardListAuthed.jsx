@@ -1,15 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import AppLayout from "../../app/AppLayout.jsx";
 import { communityApi } from "../../api/communityApi";
 import Button from "../../components/ui/Button.jsx";
+import Input from "../../components/ui/Input.jsx";
 
 export default function BoardListAuthed() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const category = searchParams.get("category") || "INFO";
+  const initialKeyword = searchParams.get("keyword") || "";
+  const initialSort = searchParams.get("sort") || "latest";
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [keyword, setKeyword] = useState(initialKeyword);
+  const [sortBy, setSortBy] = useState(initialSort);
 
   // ✅ 임시 관리자 체크 (userId 1번)
   const isAdmin = localStorage.getItem("userId") === "1";
@@ -20,22 +26,49 @@ export default function BoardListAuthed() {
     INFO: "정보 공유 게시판"
   };
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        setLoading(true);
-        const response = await communityApi.getPostsByCategory(category);
-        if (response.data && response.data.success) {
-          setPosts(response.data.data.items || []);
-        }
-      } catch (err) {
-        console.error("게시글 목록을 불러오는데 실패했습니다.", err);
-      } finally {
-        setLoading(false);
+  const fetchPosts = useCallback(async () => {
+    try {
+      setLoading(true);
+      let response;
+      
+      if (initialKeyword) {
+        // 검색어가 있을 경우 검색 API 호출
+        response = await communityApi.searchPosts(initialKeyword, 0, 20, initialSort);
+      } else {
+        // 검색어가 없을 경우 기존 카테고리별 조회
+        response = await communityApi.getPostsByCategory(category, 0, 20, initialSort);
       }
+
+      if (response.data && response.data.success) {
+        setPosts(response.data.data.items || []);
+      }
+    } catch (err) {
+      console.error("게시글 목록을 불러오는데 실패했습니다.", err);
+      setPosts([]);
+    } finally {
+      setLoading(false);
     }
+  }, [category, initialKeyword, initialSort]);
+
+  useEffect(() => {
     fetchPosts();
-  }, [category]);
+  }, [fetchPosts]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = { category };
+    if (keyword.trim()) params.keyword = keyword.trim();
+    if (sortBy !== "latest") params.sort = sortBy;
+    setSearchParams(params);
+  };
+
+  const handleSortChange = (newSort) => {
+    setSortBy(newSort);
+    const params = { category };
+    if (keyword.trim()) params.keyword = keyword.trim();
+    if (newSort !== "latest") params.sort = newSort;
+    setSearchParams(params);
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -49,6 +82,7 @@ export default function BoardListAuthed() {
     <AppLayout>
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-[2rem] border border-neutral-100 shadow-xl shadow-neutral-100/50 overflow-hidden">
+          {/* 헤더 섹션 */}
           <div className="px-8 py-8 border-b border-neutral-50 bg-neutral-50/30 flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">{boardNames[category] || "커뮤니티"}</h2>
@@ -61,6 +95,39 @@ export default function BoardListAuthed() {
                 {category === 'NOTICE' ? '공지 작성' : '새 글 쓰기'}
               </Button>
             )}
+          </div>
+
+          {/* 검색 및 필터 섹션 */}
+          <div className="px-8 py-4 bg-white border-b border-neutral-50 flex flex-wrap gap-4 items-center justify-between">
+            <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-md">
+              <Input 
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="제목으로 검색..."
+                className="flex-1"
+              />
+              <Button type="submit" variant="outline" className="px-4">검색</Button>
+            </form>
+
+            <div className="flex gap-2">
+              {[
+                { label: "최신순", value: "latest" },
+                { label: "조회순", value: "views" },
+                { label: "좋아요순", value: "likes" }
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleSortChange(option.value)}
+                  className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all ${
+                    sortBy === option.value 
+                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-100" 
+                      : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="divide-y divide-neutral-100">
@@ -102,7 +169,7 @@ export default function BoardListAuthed() {
               ))
             ) : (
               <div className="p-20 text-center text-neutral-400 font-light italic">
-                등록된 게시글이 없습니다. 첫 번째 글의 주인공이 되어보세요!
+                {initialKeyword ? `"${initialKeyword}"에 대한 검색 결과가 없습니다.` : "등록된 게시글이 없습니다. 첫 번째 글의 주인공이 되어보세요!"}
               </div>
             )}
           </div>

@@ -6,6 +6,16 @@ export const userApi = {
     return axiosInstance.get(`/users/${id}`);
   },
 
+  // 사용자명 검색
+  searchUserByUsername: (username) => {
+    return axiosInstance.get(`/users/search?username=${username}`);
+  },
+
+  // 닉네임 검색
+  searchUserByNickname: (nickname) => {
+    return axiosInstance.get(`/users/search/nickname?nickname=${nickname}`);
+  },
+
   // 사용자 정보 수정 (닉네임, 소개, Github URL)
   updateUser: (id, userData) => {
     return axiosInstance.put(`/users/${id}`, userData);

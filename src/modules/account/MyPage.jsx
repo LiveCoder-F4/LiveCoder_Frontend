@@ -24,6 +24,7 @@ export default function MyPage() {
   const [friends, setFriends] = useState([]);
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
+  const [messages, setMessages] = useState([]); // ✅ 쪽지 내역 통합 상태
 
   const [editForm, setEditForm] = useState({
     nickname: "",
@@ -68,16 +69,26 @@ export default function MyPage() {
 
   const fetchFriendData = async () => {
     try {
-      const [friendsRes, receivedRes, sentRes] = await Promise.all([
+      const [friendsRes, receivedRes, sentRes, msgReceivedRes, msgSentRes] = await Promise.all([
         friendApi.getFriends(),
         friendApi.getReceivedRequests(),
-        friendApi.getSentRequests()
+        friendApi.getSentRequests(),
+        friendApi.getReceivedMessages(),
+        friendApi.getSentMessages()
       ]);
       setFriends(friendsRes.data || []);
       setReceivedRequests(receivedRes.data || []);
       setSentRequests(sentRes.data || []);
+      
+      // ✅ 받은 쪽지와 보낸 쪽지를 합쳐서 날짜순 정렬
+      const allMessages = [
+        ...(msgReceivedRes.data || []).map(m => ({ ...m, type: 'received' })),
+        ...(msgSentRes.data || []).map(m => ({ ...m, type: 'sent' }))
+      ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      setMessages(allMessages);
     } catch (err) {
-      console.error("친구 정보를 불러오는데 실패했습니다.", err);
+      console.error("정보를 불러오는데 실패했습니다.", err);
     }
   };
 
@@ -487,6 +498,39 @@ export default function MyPage() {
                 ))
               ) : (
                 <p className="text-center py-6 text-xs text-neutral-400 italic font-light">보낸 요청이 없습니다.</p>
+              )}
+            </div>
+          </Card>
+
+          {/* ✅ 추가: 최근 쪽지 내역 */}
+          <Card title="최근 쪽지 내역" className="h-fit">
+            <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+              {messages.length > 0 ? (
+                messages.map(msg => (
+                  <div key={msg.messageId} className={`p-3 rounded-xl border ${msg.type === 'received' ? 'bg-blue-50/30 border-blue-100/50' : 'bg-neutral-50 border-neutral-100'}`}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${msg.type === 'received' ? 'text-blue-500' : 'text-neutral-400'}`}>
+                        {msg.type === 'received' ? 'Received' : 'Sent'}
+                      </span>
+                      <span className="text-[9px] text-neutral-400">{new Date(msg.createdAt).toLocaleString([], {month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-bold text-neutral-700">
+                        {msg.type === 'received' ? msg.senderNickname : msg.receiverNickname}
+                      </span>
+                      <p className="text-[11px] text-neutral-600 line-clamp-2 leading-relaxed">
+                        {msg.content}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center py-10 text-xs text-neutral-400 italic font-light">주고받은 쪽지가 없습니다.</p>
+              )}
+              {messages.length > 0 && (
+                <div className="pt-2 text-center">
+                  <a href="/friends" className="text-[10px] font-bold text-indigo-500 hover:underline">쪽지함 전체보기</a>
+                </div>
               )}
             </div>
           </Card>
