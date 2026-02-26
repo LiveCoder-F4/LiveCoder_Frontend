@@ -48,16 +48,23 @@ const FriendPage = () => {
       let response;
       if (searchType === 'nickname') {
         response = await userApi.searchUserByNickname(searchTerm);
-        setSearchResults(response.data);
+        // 닉네임 검색은 List<User>를 반환함
+        setSearchResults(Array.isArray(response.data) ? response.data : []);
       } else {
         response = await userApi.searchUserByUsername(searchTerm);
+        // 아이디 검색은 단일 User 객체 또는 null을 반환할 수 있음
         setSearchResults(response.data ? [response.data] : []);
       }
       
-      if (response.data.length === 0 || (searchType === 'username' && !response.data)) {
+      const hasResults = searchType === 'nickname' 
+        ? response.data && response.data.length > 0 
+        : !!response.data;
+
+      if (!hasResults) {
         alert('검색 결과가 없습니다.');
       }
     } catch (error) {
+      console.error('검색 오류:', error);
       alert('검색 중 오류가 발생했습니다.');
       setSearchResults([]);
     }

@@ -8,9 +8,10 @@ export default function ProblemSolve() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [problem, setProblem] = useState(null);
-  const [code, setCode] = useState("// 여기에 코드를 작성하세요\n\npublic class Solution {\n  public static void main(String[] args) {\n    System.out.println(\"Hello World\");\n  }\n}");
+  const [code, setCode] = useState("// 여기에 코드를 작성하세요\n\npublic class Main {\n  public static void main(String[] args) {\n    System.out.println(\"Hello World\");\n  }\n}");
   const [debugResult, setDebugResult] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showDetails, setShowDetails] = useState(true); // ✅ 상세 결과 토글 상태
 
   useEffect(() => {
     async function fetchProblem() {
@@ -139,23 +140,42 @@ export default function ProblemSolve() {
             
             {/* 결과 표시 보드 */}
             {debugResult && (
-              <div className={`rounded-xl border p-4 transition-all duration-300 ${
+              <div className={`rounded-xl border shadow-sm transition-all duration-300 overflow-hidden ${
                 debugResult.correct ? 'bg-green-50 border-green-200' : 'bg-rose-50 border-rose-200'
               }`}>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className={`font-bold flex items-center gap-2 ${
-                    debugResult.correct ? 'text-green-700' : 'text-rose-700'
-                  }`}>
-                    {debugResult.correct ? '✅ 정답입니다' : `❌ ${debugResult.status}`}
-                  </h3>
+                <div className="flex items-center justify-between p-4 border-b border-black/5">
+                  <div className="flex items-center gap-3">
+                    <h3 className={`font-bold flex items-center gap-2 ${
+                      debugResult.correct ? 'text-green-700' : 'text-rose-700'
+                    }`}>
+                      {debugResult.correct ? '✅ 정답입니다' : `❌ ${debugResult.status}`}
+                    </h3>
+                    <button 
+                      onClick={() => setShowDetails(!showDetails)}
+                      className="text-[10px] bg-white/50 hover:bg-white px-2 py-1 rounded border border-black/5 font-bold transition-all"
+                    >
+                      {showDetails ? '상세 결과 접기 ↑' : '상세 결과 보기 ↓'}
+                    </button>
+                  </div>
                   <div className="flex gap-4 text-xs font-mono text-neutral-500">
                     <span>시간: {debugResult.executionTime}ms</span>
                     <span>메모리: {(debugResult.memoryUsage / 1024).toFixed(2)}MB</span>
                   </div>
                 </div>
-                <div className="bg-white/50 p-2 rounded text-xs font-mono text-neutral-600 border border-black/5">
-                  {debugResult.message || "상세 실행 결과 없음"}
-                </div>
+                
+                {showDetails && (
+                  <div className="p-4 bg-neutral-900/5">
+                    <div className="bg-neutral-900 text-neutral-300 p-4 rounded-lg text-xs font-mono border border-black/10 max-h-48 overflow-y-auto custom-scrollbar">
+                      {debugResult.message ? (
+                        <pre className="whitespace-pre-wrap break-all leading-relaxed">
+                          {debugResult.message}
+                        </pre>
+                      ) : (
+                        <span className="italic opacity-50">상세 실행 결과가 없습니다.</span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
